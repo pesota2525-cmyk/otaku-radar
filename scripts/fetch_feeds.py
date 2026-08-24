@@ -243,34 +243,112 @@ def add_item(items, previous, *, title, url, category, source_name, store="", te
     }
     items.append(item)
 
+def parse_google_news_feed(query):
+    url = gnews_url(query)
+    r = fetch(url, timeout=CFG["settings"].get("google_news_timeout_seconds", 12))
+    if not r:
+        return []
+    try:
+        feed = feedparser.parse(r.content)
+        return list(feed.entries or [])
+    except Exception as e:
+        print("GNEWS PARSE FAIL", query, repr(e))
+        return []
+
 def collect_google_news(items, previous, lookback):
+    """
+    V3.3:
+    - Fetch Google News RSS with requests (instead of letting feedparser do network I/O).
+    - Try multiple progressively broader queries per category.
+    - If a category still has too few fresh results, allow up to 90 days as a fallback.
+    """
     for src in CFG.get("google_news", []):
-        feed = feedparser.parse(gnews_url(src["query"]), request_headers=UA)
-        count = 0
-        for e in feed.entries:
-            if count >= 35:
+        queries = [q for q in src.get("queries", []) if q]
+        if not queries and src.get("query"):
+            queries = [src["query"]]
+
+        min_items = src.get("min_items", 12)
+        max_items = src.get("max_items", 35)
+        fallback_days = src.get("fallback_lookback_days", 90)
+        fallback_cutoff = now_utc() - timedelta(days=fallback_days)
+
+        seen_urls = set()
+        accepted = 0
+
+        for query in queries:
+            entries = parse_google_news_feed(query)
+            print("GNEWS", src["category"], "query=", query, "entries=", len(entries))
+
+            # First pass: requested lookback window.
+            for e in entries:
+                if accepted >= max_items:
+                    break
+                dt = dt_from_feed(e)
+                if dt < lookback:
+                    continue
+
+                title = clean_text(getattr(e, "title", ""))
+                link = getattr(e, "link", "")
+                if not title or not link or link in seen_urls:
+                    continue
+                if src["category"] == "photo" and not is_photo_allowed(title):
+                    continue
+
+                try:
+                    publisher = clean_text(e.source.title)
+                except:
+                    publisher = src["name"]
+
+                add_item(
+                    items, previous,
+                    title=title, url=link, category=src["category"],
+                    source_name=src["name"], store=publisher, text=title,
+                    image="", published=dt, direct=False,
+                    source_type="google_news"
+                )
+                seen_urls.add(link)
+                accepted += 1
+
+            if accepted >= min_items:
                 break
-            dt = dt_from_feed(e)
-            if dt < lookback:
-                continue
-            title = clean_text(getattr(e, "title", ""))
-            link = getattr(e, "link", "")
-            if not title or not link:
-                continue
-            if src["category"] == "photo" and not is_photo_allowed(title):
-                continue
-            publisher = ""
-            try:
-                publisher = clean_text(e.source.title)
-            except:
-                publisher = src["name"]
-            # Google News cards intentionally do NOT use the Google News logo.
-            add_item(
-                items, previous, title=title, url=link, category=src["category"],
-                source_name=src["name"], store=publisher, text=title, image="",
-                published=dt, direct=False, source_type="google_news"
-            )
-            count += 1
+
+        # Second pass: widen to 90 days only when the category is still sparse.
+        if accepted < min_items:
+            for query in queries:
+                entries = parse_google_news_feed(query)
+                for e in entries:
+                    if accepted >= max_items:
+                        break
+                    dt = dt_from_feed(e)
+                    if dt < fallback_cutoff:
+                        continue
+
+                    title = clean_text(getattr(e, "title", ""))
+                    link = getattr(e, "link", "")
+                    if not title or not link or link in seen_urls:
+                        continue
+                    if src["category"] == "photo" and not is_photo_allowed(title):
+                        continue
+
+                    try:
+                        publisher = clean_text(e.source.title)
+                    except:
+                        publisher = src["name"]
+
+                    add_item(
+                        items, previous,
+                        title=title, url=link, category=src["category"],
+                        source_name=src["name"], store=publisher, text=title,
+                        image="", published=dt, direct=False,
+                        source_type="google_news"
+                    )
+                    seen_urls.add(link)
+                    accepted += 1
+
+                if accepted >= min_items:
+                    break
+
+        print("GNEWS CATEGORY TOTAL", src["category"], accepted)
 
 def nearest_context(a):
     node = a
@@ -493,7 +571,7 @@ def main():
     print("Category counts:", counts)
 
     payload = {
-        "version": 3.2,
+        "version": 3.3,
         "generated_at": datetime.now(JST).isoformat(),
         "count": len(items),
         "items": items

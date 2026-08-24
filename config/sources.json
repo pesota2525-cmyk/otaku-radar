@@ -17,53 +17,124 @@
       "bookbonus": 45,
       "doujin": 45,
       "trend": 55
-    }
+    },
+    "google_news_timeout_seconds": 12
   },
   "google_news": [
     {
       "name": "アニメグッズ新着",
       "category": "goods",
-      "query": "\"アニメ\" (グッズ OR アクスタ OR タペストリー OR 新商品 OR 予約開始)"
+      "query": "\"アニメ\" (グッズ OR アクスタ OR タペストリー OR 新商品 OR 予約開始)",
+      "queries": [
+        "\"アニメグッズ\" (新作 OR 新商品 OR 発売 OR 予約)",
+        "(アニメ OR ゲーム) (アクリルスタンド OR タペストリー OR グッズ) (発売 OR 予約)",
+        "(キャラクターグッズ OR アニメグッズ) 新商品"
+      ],
+      "min_items": 12,
+      "max_items": 35,
+      "fallback_lookback_days": 90
     },
     {
       "name": "フィギュア新着",
       "category": "figure",
-      "query": "(アニメ OR ゲーム) フィギュア (新作 OR 予約 OR 発売)"
+      "query": "(アニメ OR ゲーム) フィギュア (新作 OR 予約 OR 発売)",
+      "queries": [
+        "フィギュア (予約開始 OR 新作 OR 発売) アニメ",
+        "(スケールフィギュア OR ねんどろいど OR フィギュア) 新作",
+        "(グッドスマイルカンパニー OR アルター OR コトブキヤ) フィギュア"
+      ],
+      "min_items": 12,
+      "max_items": 35,
+      "fallback_lookback_days": 90
     },
     {
       "name": "一番くじ・プライズ",
       "category": "lottery",
-      "query": "(\"一番くじ\" OR プライズ) (新作 OR 発売 OR 登場)"
+      "query": "(\"一番くじ\" OR プライズ) (新作 OR 発売 OR 登場)",
+      "queries": [
+        "\"一番くじ\" (発売 OR 新作 OR 発売決定)",
+        "(プライズ OR クレーンゲーム景品) (登場 OR 新作) アニメ",
+        "(一番くじ OR プライズ) アニメ"
+      ],
+      "min_items": 12,
+      "max_items": 35,
+      "fallback_lookback_days": 90
     },
     {
       "name": "コラボ・POP UP",
       "category": "collab",
-      "query": "(アニメ OR ゲーム) (コラボ OR \"POP UP\" OR ポップアップ) (グッズ OR ストア)"
+      "query": "(アニメ OR ゲーム) (コラボ OR \"POP UP\" OR ポップアップ) (グッズ OR ストア)",
+      "queries": [
+        "(アニメ OR ゲーム) (\"POP UP\" OR ポップアップストア OR コラボカフェ)",
+        "(アニメ OR ゲーム) (コラボショップ OR コラボイベント OR フェア)",
+        "アニメ POP UP STORE"
+      ],
+      "min_items": 12,
+      "max_items": 35,
+      "fallback_lookback_days": 90
     },
     {
       "name": "コスプレイベント",
       "category": "cosplay",
-      "query": "(acosta OR COSSAN OR コスプレイベント OR コスプレ撮影イベント) (東京 OR 神奈川 OR 埼玉 OR 千葉)"
+      "query": "(acosta OR COSSAN OR コスプレイベント OR コスプレ撮影イベント) (東京 OR 神奈川 OR 埼玉 OR 千葉)",
+      "queries": [
+        "(コスプレイベント OR コスプレ撮影イベント OR acosta) (東京 OR 神奈川 OR 埼玉 OR 千葉)",
+        "(コスプレ OR cosplay) イベント 関東",
+        "(acosta OR COSSAN) 開催"
+      ],
+      "min_items": 12,
+      "max_items": 35,
+      "fallback_lookback_days": 90
     },
     {
       "name": "女性モデル撮影会",
       "category": "photo",
-      "query": "(\"水着撮影会\" OR \"グラビア撮影会\" OR \"コスプレ撮影会\" OR \"モデル撮影会\") (東京 OR 神奈川 OR 埼玉 OR 千葉)"
+      "query": "(\"水着撮影会\" OR \"グラビア撮影会\" OR \"コスプレ撮影会\" OR \"モデル撮影会\") (東京 OR 神奈川 OR 埼玉 OR 千葉)",
+      "queries": [
+        "(\"水着撮影会\" OR \"グラビア撮影会\" OR \"コスプレ撮影会\" OR \"モデル撮影会\") (東京 OR 神奈川 OR 埼玉 OR 千葉)"
+      ],
+      "min_items": 12,
+      "max_items": 35,
+      "fallback_lookback_days": 90
     },
     {
       "name": "漫画店舗特典",
       "category": "bookbonus",
-      "query": "(漫画 OR コミック OR 単行本) (\"店舗特典\" OR \"購入特典\" OR \"描き下ろし\" OR \"イラストカード\")"
+      "query": "(漫画 OR コミック OR 単行本) (\"店舗特典\" OR \"購入特典\" OR \"描き下ろし\" OR \"イラストカード\")",
+      "queries": [
+        "(漫画 OR コミック OR 単行本) (店舗特典 OR 購入特典 OR 描き下ろし)",
+        "コミック (イラストカード OR リーフレット OR 特典) 発売",
+        "(ゲーマーズ OR メロンブックス OR アニメイト) コミック 特典"
+      ],
+      "min_items": 12,
+      "max_items": 35,
+      "fallback_lookback_days": 90
     },
     {
       "name": "同人誌特典",
       "category": "doujin",
-      "query": "(同人誌 OR 同人新刊) (特典 OR 限定 OR 予約 OR メロンブックス OR とらのあな)"
+      "query": "(同人誌 OR 同人新刊) (特典 OR 限定 OR 予約 OR メロンブックス OR とらのあな)",
+      "queries": [
+        "(同人誌 OR 同人新刊) (予約 OR 特典 OR 限定)",
+        "(メロンブックス OR とらのあな) 同人誌 新刊",
+        "同人誌 新刊 通販"
+      ],
+      "min_items": 12,
+      "max_items": 35,
+      "fallback_lookback_days": 90
     },
     {
       "name": "注目商品レーダー",
       "category": "trend",
-      "query": "(抽選販売 OR 完売 OR 品薄 OR 再販 OR 限定販売 OR 予約終了) (フィギュア OR カード OR ゲーム OR ホビー OR グッズ)"
+      "query": "(抽選販売 OR 完売 OR 品薄 OR 再販 OR 限定販売 OR 予約終了) (フィギュア OR カード OR ゲーム OR ホビー OR グッズ)",
+      "queries": [
+        "(抽選販売 OR 完売 OR 品薄 OR 再販 OR 限定販売) (フィギュア OR カード OR ゲーム OR ホビー OR グッズ)",
+        "(予約終了 OR 即完売 OR プレミア) (ホビー OR グッズ OR ゲーム)",
+        "(抽選 OR 再販) 人気商品 ホビー"
+      ],
+      "min_items": 12,
+      "max_items": 35,
+      "fallback_lookback_days": 90
     }
   ],
   "direct_sources": [
