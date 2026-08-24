@@ -453,20 +453,47 @@ def main():
 
     items = dedupe(items)
 
-    # Keep direct cards higher, then score, then freshness.
-    items.sort(
-        key=lambda x: (
+    # V3.2: Balance categories BEFORE applying the global cap.
+    # V3 direct sources (especially Gamers) can generate enough cards to push
+    # Google News categories out of the final dataset if we only sort globally.
+    def item_sort_key(x):
+        return (
             1 if x.get("direct") else 0,
             1 if x.get("image") else 0,
             x.get("score",0),
             x.get("published_at","")
-        ),
-        reverse=True
-    )
-    items = items[:CFG["settings"].get("max_total_items", 320)]
+        )
+
+    by_cat = {}
+    for x in items:
+        by_cat.setdefault(x.get("category","other"), []).append(x)
+
+    category_limits = CFG["settings"].get("category_limits", {})
+    balanced = []
+    leftovers = []
+
+    for category, rows in by_cat.items():
+        rows.sort(key=item_sort_key, reverse=True)
+        limit = category_limits.get(category, 60)
+        balanced.extend(rows[:limit])
+        leftovers.extend(rows[limit:])
+
+    balanced.sort(key=item_sort_key, reverse=True)
+    leftovers.sort(key=item_sort_key, reverse=True)
+
+    max_total = CFG["settings"].get("max_total_items", 520)
+    if len(balanced) < max_total:
+        balanced.extend(leftovers[:max_total-len(balanced)])
+
+    items = balanced[:max_total]
+
+    counts = {}
+    for x in items:
+        counts[x.get("category","other")] = counts.get(x.get("category","other"), 0) + 1
+    print("Category counts:", counts)
 
     payload = {
-        "version": 3,
+        "version": 3.2,
         "generated_at": datetime.now(JST).isoformat(),
         "count": len(items),
         "items": items

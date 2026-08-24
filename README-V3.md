@@ -46,3 +46,9 @@ GitHubで以下を上書きしてください。
 Actions → Update OTAKU RADAR → Run workflow
 
 でV3データを生成してください。
+
+## V3.2
+- サイト名を「深淵」に変更
+- サブタイトル / DAILY DISCOVERY FEED を削除
+- カテゴリごとの件数上限を導入し、ゲーマーズ等の直接取得が他カテゴリを押し出さないよう修正
+- 全体上限を520件へ拡張

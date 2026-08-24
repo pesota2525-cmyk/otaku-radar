@@ -75,7 +75,7 @@ function render(){
 
 fetch("data/items.json?"+Date.now()).then(r=>r.json()).then(j=>{
   data=j.items||[];
-  $("#updated").textContent=j.generated_at?`V${j.version||3} · 最終更新 ${fmt(j.generated_at)} / ${j.count}件`:"更新待ち";
+  $("#updated").textContent=j.generated_at?`最終更新 ${fmt(j.generated_at)} / ${j.count}件`:"更新待ち";
   render();
 }).catch(()=>render());
 

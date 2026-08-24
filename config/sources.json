@@ -1,10 +1,23 @@
 {
   "settings": {
-    "max_total_items": 320,
+    "max_total_items": 520,
     "lookback_days": 30,
     "request_timeout_seconds": 10,
     "max_detail_fetches_per_source": 35,
-    "photo_only_adults": true
+    "photo_only_adults": true,
+    "category_limits": {
+      "gamers": 90,
+      "eroge": 90,
+      "photo": 70,
+      "cosplay": 55,
+      "goods": 55,
+      "figure": 55,
+      "lottery": 45,
+      "collab": 55,
+      "bookbonus": 45,
+      "doujin": 45,
+      "trend": 55
+    }
   },
   "google_news": [
     {
