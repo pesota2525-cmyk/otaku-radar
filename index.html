@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#0b0d12">
-  <title>OTAKU RADAR</title>
+  <meta name="theme-color" content="#090b10">
+  <title>OTAKU RADAR V3</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="top">
   <div>
-    <div class="eyebrow">DAILY DISCOVERY FEED</div>
+    <div class="eyebrow">DAILY DISCOVERY FEED · V3</div>
     <h1>OTAKU RADAR</h1>
-    <p>グッズ・イベント・撮影会・注目商品を、画像中心で流し見。</p>
+    <p>グッズ・特典・POP UP・コスプレ・女性撮影会を、画像優先で流し見。</p>
   </div>
   <div class="meta">
     <span id="updated">更新待ち</span>
@@ -22,30 +22,45 @@
 
 <nav id="filters" class="filters">
   <button class="active" data-cat="all">全部</button>
+  <button data-cat="gamers">ゲーマーズ</button>
+  <button data-cat="eroge">PCゲーム特典</button>
+  <button data-cat="photo">女性撮影会</button>
+  <button data-cat="cosplay">コスプレ</button>
   <button data-cat="goods">グッズ</button>
   <button data-cat="figure">フィギュア</button>
   <button data-cat="lottery">くじ・プライズ</button>
   <button data-cat="collab">コラボ</button>
-  <button data-cat="cosplay">コスプレ</button>
-  <button data-cat="photo">撮影会</button>
-  <button data-cat="eroge">PCゲーム特典</button>
   <button data-cat="bookbonus">漫画特典</button>
   <button data-cat="doujin">同人誌</button>
-  <button data-cat="gamers">ゲーマーズ</button>
   <button data-cat="trend">🔥 注目商品</button>
 </nav>
 
 <main>
   <div class="toolbar">
-    <input id="search" placeholder="作品名・商品名・イベント名で検索">
+    <input id="search" placeholder="作品名・商品名・イベント名・店舗名で検索">
+    <select id="period">
+      <option value="all">30日以内</option>
+      <option value="1">今日</option>
+      <option value="3">3日以内</option>
+      <option value="7">7日以内</option>
+      <option value="14">14日以内</option>
+    </select>
     <select id="sort">
-      <option value="hot">注目順</option>
+      <option value="recommended">おすすめ順</option>
       <option value="new">新着順</option>
+      <option value="image">画像あり優先</option>
     </select>
   </div>
+
+  <div class="sourceLegend">
+    <span class="directDot"></span> 公式・ショップを直接取得
+    <span class="newsDot"></span> ニュース補助
+    <span class="adultMark">18+</span> 成人向け情報を含む
+  </div>
+
   <div id="empty" class="empty" hidden>
-    <h2>まだデータがない！</h2>
-    <p>GitHub Actionsが1回動くと、ここに新着カードが並ぶよ。</p>
+    <h2>この条件では0件！</h2>
+    <p>期間を広げるか「全部」に戻してみて。</p>
   </div>
   <section id="grid" class="grid"></section>
 </main>
@@ -54,12 +69,14 @@
   <article class="card">
     <a class="imageWrap" target="_blank" rel="noopener noreferrer">
       <img loading="lazy" alt="">
-      <div class="fallback">NO IMAGE</div>
       <span class="badge"></span>
+      <span class="adultBadge" hidden>18+</span>
+      <span class="directBadge" hidden>公式直</span>
     </a>
     <div class="body">
       <div class="source"></div>
       <a class="title" target="_blank" rel="noopener noreferrer"></a>
+      <div class="detail"></div>
       <div class="bottom">
         <time></time>
         <button class="save" aria-label="保存">☆</button>
