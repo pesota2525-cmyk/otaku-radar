@@ -1,0 +1,95 @@
+{
+  "sources": [
+    {
+      "name": "アニメグッズ新着",
+      "category": "goods",
+      "type": "google_news",
+      "query": "\"アニメ\" (グッズ OR アクスタ OR 新商品 OR 予約開始)"
+    },
+    {
+      "name": "フィギュア新着",
+      "category": "figure",
+      "type": "google_news",
+      "query": "(アニメ OR ゲーム) フィギュア (新作 OR 予約 OR 発売)"
+    },
+    {
+      "name": "一番くじ・プライズ",
+      "category": "lottery",
+      "type": "google_news",
+      "query": "(\"一番くじ\" OR プライズ) (新作 OR 発売 OR 登場)"
+    },
+    {
+      "name": "コラボ・POP UP",
+      "category": "collab",
+      "type": "google_news",
+      "query": "(アニメ OR ゲーム) (コラボ OR \"POP UP\" OR ポップアップ) グッズ"
+    },
+    {
+      "name": "コスプレイベント",
+      "category": "cosplay",
+      "type": "google_news",
+      "query": "コスプレ イベント (東京 OR 神奈川 OR 埼玉 OR 千葉)"
+    },
+    {
+      "name": "acosta! 新着",
+      "category": "cosplay",
+      "type": "google_news",
+      "query": "site:acosta.jp (開催 OR EVENT OR イベント)"
+    },
+    {
+      "name": "撮影会・モデル撮影",
+      "category": "photo",
+      "type": "google_news",
+      "query": "(撮影会 OR モデル撮影会) (東京 OR 神奈川 OR 埼玉 OR 千葉)"
+    },
+    {
+      "name": "注目商品レーダー",
+      "category": "trend",
+      "type": "google_news",
+      "query": "(抽選販売 OR 完売 OR 品薄 OR 再販 OR 限定販売 OR 予約終了) (フィギュア OR カード OR ゲーム OR ホビー OR グッズ)"
+    },
+    {
+      "name": "美少女ゲーム・エロゲ予約特典",
+      "category": "eroge",
+      "type": "google_news",
+      "query": "(\"美少女ゲーム\" OR \"PCゲーム\" OR エロゲ) (\"予約特典\" OR \"店舗特典\" OR \"描き下ろし\" OR \"特典情報\")"
+    },
+    {
+      "name": "美少女ゲーム店舗特典",
+      "category": "eroge",
+      "type": "google_news",
+      "query": "(\"ソフマップ\" OR \"げっちゅ屋\" OR \"メロンブックス\" OR \"とらのあな\") (\"PCゲーム\" OR \"美少女ゲーム\") (\"店舗特典\" OR \"予約特典\")"
+    },
+    {
+      "name": "漫画・コミック店舗特典",
+      "category": "bookbonus",
+      "type": "google_news",
+      "query": "(漫画 OR コミック OR 単行本) (\"店舗特典\" OR \"購入特典\" OR \"描き下ろし\" OR \"イラストカード\")"
+    },
+    {
+      "name": "同人誌・同人新刊特典",
+      "category": "doujin",
+      "type": "google_news",
+      "query": "(同人誌 OR 同人 OR 新刊) (\"特典\" OR \"限定\" OR \"予約\" OR \"メロンブックス\" OR \"とらのあな\")"
+    },
+    {
+      "name": "ゲーマーズ POP UP",
+      "category": "gamers",
+      "type": "google_news",
+      "query": "ゲーマーズ (\"POP UP\" OR \"ポップアップ\" OR \"フェア\" OR \"オンリーショップ\" OR \"先行販売\")"
+    },
+    {
+      "name": "ゲーマーズ公式ニュース",
+      "category": "gamers",
+      "type": "google_news",
+      "query": "site:gamers.co.jp (POP OR フェア OR イベント OR 特典 OR 限定)"
+    }
+  ],
+  "settings": {
+    "max_items_per_source": 25,
+    "max_total_items": 220,
+    "lookback_days": 14,
+    "fetch_og_images": true,
+    "request_timeout_seconds": 8
+  }
+}
