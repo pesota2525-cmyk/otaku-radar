@@ -1,4 +1,3 @@
-
 const LABELS={
   goods:"グッズ",figure:"フィギュア",lottery:"くじ・プライズ",collab:"コラボ",
   cosplay:"コスプレ",photo:"女性撮影会",eroge:"PCゲーム特典",bookbonus:"漫画特典",
@@ -12,12 +11,16 @@ const fmt=d=>{try{return new Intl.DateTimeFormat("ja-JP",{month:"numeric",day:"n
 function withinDays(x, days){
   if(days==="all") return true;
   const ms=Number(days)*86400000;
-  return (Date.now()-new Date(x.published_at).getTime()) <= ms;
+  const diff=Date.now()-new Date(x.published_at).getTime();
+  // Future-dated product/event entries should also remain visible.
+  return diff <= ms;
 }
+
 function render(){
   const q=$("#search").value.trim().toLowerCase();
   const sort=$("#sort").value;
   const period=$("#period").value;
+
   let rows=data.filter(x =>
     (cat==="all"||x.category===cat) &&
     (!q || (x.title+" "+x.publisher+" "+(x.meta||"")).toLowerCase().includes(q)) &&
@@ -31,7 +34,8 @@ function render(){
     return (Number(Boolean(b.direct))-Number(Boolean(a.direct))) || (Number(Boolean(b.image))-Number(Boolean(a.image))) || (b.score-a.score) || (new Date(b.published_at)-new Date(a.published_at));
   });
 
-  const grid=$("#grid"); grid.innerHTML="";
+  const grid=$("#grid");
+  grid.innerHTML="";
   $("#empty").hidden=rows.length!==0;
 
   for(const x of rows){
@@ -40,27 +44,49 @@ function render(){
     const imageWrap=frag.querySelector(".imageWrap");
     const img=frag.querySelector("img");
     const title=frag.querySelector(".title");
+    const badge=frag.querySelector(".badge");
+    const adult=frag.querySelector(".adultBadge");
+    const directBadge=frag.querySelector(".directBadge");
+
     imageWrap.href=title.href=x.url;
+
+    // IMPORTANT:
+    // Do not remove imageWrap from the fragment.
+    // .badge / .adultBadge / .directBadge live inside it.
+    // Removing it caused no-image Google News cards to crash render().
     if(x.image){
-      img.src=x.image; img.alt=x.title;
-      img.onerror=()=>{ card.classList.add("noImage"); imageWrap.remove(); };
+      img.src=x.image;
+      img.alt=x.title;
+      img.onerror=()=>{
+        card.classList.add("noImage");
+        imageWrap.style.display="none";
+      };
     }else{
       card.classList.add("noImage");
-      imageWrap.remove();
+      imageWrap.style.display="none";
     }
+
     if(x.direct) card.classList.add("direct");
-    frag.querySelector(".badge").textContent=LABELS[x.category]||x.category;
-    const source = frag.querySelector(".source");
+
+    if(badge) badge.textContent=LABELS[x.category]||x.category;
+
+    const source=frag.querySelector(".source");
     source.textContent=(x.direct?"● ":"")+(x.publisher||x.feed_name)+(x.direct?" · 公式/店舗直":" · ニュース");
+
     title.textContent=x.title;
+
     const detail=frag.querySelector(".detail");
-    detail.textContent=x.meta||"";
-    if(!x.meta) detail.remove();
-    frag.querySelector("time").textContent=fmt(x.published_at);
-    const adult=frag.querySelector(".adultBadge");
-    if(x.adult) adult.hidden=false;
-    const direct=frag.querySelector(".directBadge");
-    if(x.direct) direct.hidden=false;
+    if(detail){
+      detail.textContent=x.meta||"";
+      if(!x.meta) detail.remove();
+    }
+
+    const time=frag.querySelector("time");
+    if(time) time.textContent=fmt(x.published_at);
+
+    if(adult && x.adult) adult.hidden=false;
+    if(directBadge && x.direct) directBadge.hidden=false;
+
     const btn=frag.querySelector(".save");
     btn.textContent=saved.has(x.id)?"★":"☆";
     btn.classList.toggle("saved",saved.has(x.id));
@@ -69,23 +95,38 @@ function render(){
       localStorage.setItem("otakuRadarSavedV3",JSON.stringify([...saved]));
       render();
     };
+
     grid.appendChild(frag);
   }
 }
 
-fetch("data/items.json?"+Date.now()).then(r=>r.json()).then(j=>{
-  data=j.items||[];
-  $("#updated").textContent=j.generated_at?`最終更新 ${fmt(j.generated_at)} / ${j.count}件`:"更新待ち";
-  render();
-}).catch(()=>render());
+fetch("data/items.json?"+Date.now())
+  .then(r=>{
+    if(!r.ok) throw new Error(`items.json HTTP ${r.status}`);
+    return r.json();
+  })
+  .then(j=>{
+    data=j.items||[];
+    $("#updated").textContent=j.generated_at?`最終更新 ${fmt(j.generated_at)} / ${j.count}件`:"更新待ち";
+    render();
+  })
+  .catch(err=>{
+    console.error("OTAKU RADAR load error:",err);
+    data=[];
+    render();
+  });
 
 document.querySelectorAll("#filters button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("#filters button").forEach(x=>x.classList.remove("active"));
-  b.classList.add("active");cat=b.dataset.cat;render();
+  b.classList.add("active");
+  cat=b.dataset.cat;
+  render();
 });
+
 $("#search").oninput=render;
 $("#sort").onchange=render;
 $("#period").onchange=render;
+
 $("#savedOnly").onclick=e=>{
   savedOnly=!savedOnly;
   e.currentTarget.textContent=savedOnly?"★ 保存中のみ":"★ 保存だけ";
